@@ -30,7 +30,7 @@ The `experiments.py` script runs all statistical experiments required for Assign
 ### Run All Experiments
 
 ```bash
-python experiments.py
+python3 experiments.py
 ```
 
 ## Configuration
