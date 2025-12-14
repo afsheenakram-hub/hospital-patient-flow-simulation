@@ -32,44 +32,50 @@ def patient_process(env: simpy.Environment, patient: Patient,
                    surgery_resource: simpy.Resource,
                    recovery_resource: simpy.Resource,
                    monitor: SystemMonitor):
-    """Patient process flows through prep, surgery, and recovery."""
-    
+
     # Record arrival
     patient.arrival_time = env.now
-    queue_at_arrival = len(prep_resource.queue)
+    queue_at_arrival = max(0, prep_resource.count + len(prep_resource.queue) - prep_resource.capacity)
     monitor.record_patient_arrival(patient.patient_id, patient.arrival_time, patient.patient_type, queue_at_arrival)
-    
-    # Preparation phase
+
+    # PREPARATION
+
     with prep_resource.request() as prep_request:
         yield prep_request
         yield env.timeout(patient.prep_time)
-    
-    # Surgery phase (priority scheduling)
+
+    # SURGERY (priority resource)
+
     surgery_request = surgery_resource.request(priority=patient.priority)
     yield surgery_request
     yield env.timeout(patient.surgery_time)
-    
-    # Request a recovery room
+
+    # RECOVERY (possible blocking)
+
     recovery_request = recovery_resource.request()
-    
-    # If recovery is full at surgery completion → blocking begins
+
+    was_blocked = False
+
+    # If recovery is full → blocking begins
     if recovery_resource.count >= recovery_resource.capacity:
+        was_blocked = True
         monitor.start_blocking(env.now)
-    
-    # Wait until recovery becomes available
+
+    # Wait for recovery bed
     yield recovery_request
-    
-    # End blocking IF it was active
-    if monitor.current_blocking_start is not None:
+
+    # End blocking only if this patient was blocked
+    if was_blocked:
         monitor.end_blocking(env.now)
-    
-    # Recovery phase
+
+    # RECOVERY SERVICE
+
     surgery_resource.release(surgery_request)
-    
     yield env.timeout(patient.recovery_time)
     recovery_resource.release(recovery_request)
-    
-    # Departure
+
+    # DEPARTURE
+
     patient.departure_time = env.now
     monitor.record_patient_departure(patient.patient_id, patient.departure_time)
 

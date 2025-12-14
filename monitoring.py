@@ -291,7 +291,7 @@ def monitoring_process(env: simpy.Environment, monitor: SystemMonitor,
         monitor.update_resource_utilization('theatre', surgery_busy_units, surgery_resource.capacity, duration)
         monitor.update_resource_utilization('recovery', recovery_busy_units, recovery_resource.capacity, duration)
 
-	# Track probability that all recovery units are busy
+        # Track probability that all recovery rooms are busy
         if recovery_busy_units == recovery_resource.capacity:
             monitor.time_all_recovery_busy += duration
 

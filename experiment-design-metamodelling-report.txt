@@ -48,8 +48,8 @@ REGRESSION ANALYSIS
 
 Regression Model:
 ======================================================================
-RÂ² = 1.0000
-Adjusted RÂ² = 0.0000
+R² = 1.0000
+Adjusted R² = 0.0000
 
 Coefficients:
 Term       Coefficient     p-value         Significant    

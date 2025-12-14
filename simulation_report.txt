@@ -3,29 +3,31 @@ HOSPITAL PATIENT FLOW SIMULATION - PERFORMANCE REPORT
 ======================================================================
 
 PATIENT STATISTICS:
-  Total patients arrived: 393
-  Completed patients: 385
-  Average throughput time: 279.65
-  Min throughput time: 17.55
-  Max throughput time: 750.55
+  Total patients arrived: 351
+  Completed patients: 346
+  Average throughput time: 227.67
+  Min throughput time: 14.12
+  Max throughput time: 757.61
+  Avg urgent throughput time: 128.51
+  Avg routine throughput time: 240.27
 
 QUEUE STATISTICS:
-  Average prep queue length: 0.20
-  Average surgery queue length: 6.73
-  Average recovery queue length: 0.09
-  Max prep queue length: 5
-  Max surgery queue length: 20
+  Average prep queue length: 0.17
+  Average surgery queue length: 4.29
+  Average recovery queue length: 0.07
+  Max prep queue length: 4
+  Max surgery queue length: 25
   Max recovery queue length: 1
 
 RESOURCE UTILIZATION:
-  Preparation rooms: 51.86%
-  Operating theatre: 92.49%
-  Recovery rooms: 51.45%
+  Preparation rooms: 45.48%
+  Operating theatre: 77.81%
+  Recovery rooms: 44.27%
 
 OPERATING THEATRE BLOCKING:
-  Total blocking time: 950.48
-  Blocking probability: 9.50%
-  Number of blocking events: 177
-  Average blocking duration: 5.37
+  Total blocking time: 710.42
+  Blocking probability: 7.10%
+  Number of blocking events: 145
+  Average blocking duration: 4.90
 
 ======================================================================
