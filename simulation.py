@@ -33,34 +33,44 @@ def patient_process(env: simpy.Environment, patient: Patient,
                    recovery_resource: simpy.Resource,
                    monitor: SystemMonitor):
     """Patient process flows through prep, surgery, and recovery."""
+    
+    # Record arrival
     patient.arrival_time = env.now
     monitor.record_patient_arrival(patient.patient_id, patient.arrival_time, patient.patient_type)
     
+    # Preparation phase
     with prep_resource.request() as prep_request:
         yield prep_request
         yield env.timeout(patient.prep_time)
     
+    # Surgery phase (priority scheduling)
     surgery_request = surgery_resource.request(priority=patient.priority)
     yield surgery_request
     yield env.timeout(patient.surgery_time)
     
+    # Request a recovery room
     recovery_request = recovery_resource.request()
-    was_blocked = recovery_resource.count >= recovery_resource.capacity
-    if was_blocked:
+    
+    # If recovery is full at surgery completion → blocking begins
+    if recovery_resource.count >= recovery_resource.capacity:
         monitor.start_blocking(env.now)
     
+    # Wait until recovery becomes available
     yield recovery_request
     
-    if was_blocked:
+    # End blocking IF it was active
+    if monitor.current_blocking_start is not None:
         monitor.end_blocking(env.now)
     
+    # Recovery phase
     surgery_resource.release(surgery_request)
+    
     yield env.timeout(patient.recovery_time)
     recovery_resource.release(recovery_request)
     
+    # Departure
     patient.departure_time = env.now
     monitor.record_patient_departure(patient.patient_id, patient.departure_time)
-
 
 def arrival_generator(env: simpy.Environment,
                      prep_resource: simpy.Resource,
